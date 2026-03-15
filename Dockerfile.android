@@ -1,0 +1,56 @@
+# Stage 1: Build the Next.js static export
+FROM node:20-slim AS web-builder
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy package files and install dependencies
+COPY web/package.json web/pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+# Copy the rest of the web project
+COPY web/ .
+
+# Fix the API routes for static export
+RUN mv src/app/api src/api_backup || true
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Build the project
+RUN pnpm build
+
+# Stage 2: Build the Android APK
+FROM reactnativecommunity/react-native-android:latest
+WORKDIR /app
+
+# Install Java 21 and Node.js
+RUN apt-get update && \
+    apt-get install -y openjdk-21-jdk curl && \
+    curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g pnpm
+
+# Set Java 21 as default
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Copy everything from the builder
+COPY --from=web-builder /app /app/web
+
+# Set working directory to the web folder
+WORKDIR /app/web
+
+# Sync capacitor
+RUN npx cap sync android
+
+# Set working directory to the android folder
+WORKDIR /app/web/android
+
+# Accept Android SDK licenses and build the APK
+RUN yes | sdkmanager --licenses || true
+RUN ./gradlew assembleDebug
+
+# The APK will be available in the container at:
+# /app/web/android/app/build/outputs/apk/debug/app-debug.apk
