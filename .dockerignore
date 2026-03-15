@@ -1,0 +1,9 @@
+web/node_modules
+web/out
+web/.next
+web/android/app/build
+web/android/.gradle
+.git
+node_modules
+ai-service
+build-output
