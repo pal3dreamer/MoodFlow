@@ -45,12 +45,14 @@ class TranscriptionPipeline:
         if audio_np.ndim > 1:
             audio_np = audio_np[0]
         
-        kwargs = {"return_timestamps": False}
+        kwargs = {"return_timestamps": True}
         if language:
             kwargs["language"] = language
         
         result = self._pipeline(audio_np, **kwargs)
-        text = result["text"]
+        text = result.get("text", "")
+        if not text and "chunks" in result:
+            text = " ".join(chunk.get("text", "") for chunk in result["chunks"])
         logger.info(f"  Transcription complete: \"{text}\"")
         
         return text
