@@ -6,22 +6,20 @@ datasource db {
   provider = "postgresql"
 }
 
-// NextAuth Models
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -35,9 +33,9 @@ model AuthSession {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?       @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
@@ -53,30 +51,27 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// MoodFlow Application Models
 model Session {
-  id            String         @id @default(cuid())
-  userId        String
-  topic         String?
-  startTime     DateTime       @default(now())
-  endTime       DateTime?
-  startEmotion  Json?
-  endEmotion    Json?
-  duration      Int?           // In seconds
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  checkins      AudioCheckin[]
+  id           String         @id @default(cuid())
+  userId       String
+  topic        String?
+  startTime    DateTime       @default(now())
+  endTime      DateTime?
+  startEmotion Json?
+  endEmotion   Json?
+  duration     Int?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  checkins     AudioCheckin[]
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model AudioCheckin {
-  id             String   @id @default(cuid())
-  sessionId      String
-  audioUrl       String
-  transcription  String?  @db.Text
-  emotionVector  Json?
-  timestamp      DateTime @default(now())
-
-  session        Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  id            String   @id @default(cuid())
+  sessionId     String
+  audioUrl      String
+  transcription String?
+  emotionVector Json?
+  timestamp     DateTime @default(now())
+  session       Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }

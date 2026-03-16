@@ -2,9 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { uploadAudio } from '@/lib/storage';
 import { processCheckin } from '@/lib/ai-service';
+import { getAuthenticatedUser } from '@/lib/session';
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await getAuthenticatedUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const formData = await req.formData();
     const sessionId = formData.get('sessionId') as string;
     const audioFile = formData.get('audio') as File;
@@ -30,7 +36,7 @@ export async function POST(req: NextRequest) {
     // 3. Call AI Service
     let aiResult;
     try {
-      aiResult = await processCheckin(audioUrl);
+      aiResult = await processCheckin(buffer, fileName);
     } catch (aiError) {
       console.error('AI Service call failed:', aiError);
       aiResult = {
