@@ -1,4 +1,5 @@
 import axios from 'axios';
+import FormData from 'form-data';
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
 
@@ -9,44 +10,45 @@ export interface EmotionResult {
 export interface ProcessCheckinResponse {
   transcription: string;
   topic: string;
-  emotion: EmotionResult;
-}
-
-export interface AnalyzeAudioResponse {
-  duration: string;
-  emotion_timeline: Array<{
-    time: string;
+  emotion_trajectory: Array<{
+    time: number;
     emotion: string;
+    scores: EmotionResult;
   }>;
 }
 
 /**
- * Sends a request to the AI service to process a check-in (start/end of session).
- * For this implementation, we assume the AI service can accept an audio URL or we'll send it a blob.
- * If the AI service expects a file, we should fetch it from MinIO first or pass it as multipart form data.
+ * Sends a request to the AI service to process a check-in.
+ * Updated to match the FastAPI contract: POST /process-checkin/ with a file.
  */
-export async function processCheckin(audioUrl: string): Promise<ProcessCheckinResponse> {
+export async function processCheckin(audioBuffer: Buffer, fileName: string): Promise<any> {
   try {
-    // In a real scenario, we might need to send the actual file or a presigned URL
-    // For now, we follow the contract in the product requirements
-    const response = await axios.post(`${AI_SERVICE_URL}/process-checkin`, {
-      audio_url: audioUrl,
+    const form = new FormData();
+    // The AI service expects a field named 'file'
+    form.append('file', audioBuffer, {
+      filename: fileName,
+      contentType: 'audio/wav',
     });
-    return response.data;
-  } catch (error) {
-    console.error('Error calling AI Service /process-checkin:', error);
-    throw error;
-  }
-}
 
-export async function analyzeAudio(audioUrl: string): Promise<AnalyzeAudioResponse> {
-  try {
-    const response = await axios.post(`${AI_SERVICE_URL}/analyze-audio`, {
-      audio_url: audioUrl,
+    const response = await axios.post(`${AI_SERVICE_URL}/process-checkin/`, form, {
+      headers: {
+        ...form.getHeaders(),
+      },
     });
-    return response.data;
+
+    // The AI service returns a trajectory. We'll simplify it for the main dashboard 
+    // by taking the average or the last state for now, matching our frontend expectation.
+    const data = response.data;
+    const trajectory = data.emotion_trajectory || [];
+    const lastPoint = trajectory.length > 0 ? trajectory[trajectory.length - 1] : null;
+
+    return {
+      transcription: data.transcription,
+      topic: data.topic,
+      emotion: lastPoint ? lastPoint.scores : { calm: 1.0 }
+    };
   } catch (error) {
-    console.error('Error calling AI Service /analyze-audio:', error);
+    console.error('Error calling AI Service /process-checkin/:', error);
     throw error;
   }
 }

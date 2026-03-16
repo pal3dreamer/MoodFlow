@@ -2,30 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { uploadAudio } from '@/lib/storage';
 import { processCheckin } from '@/lib/ai-service';
-import { getServerSession } from 'next-auth';
-// You'll need to create this NextAuth options file later
-// import { authOptions } from '@/lib/auth';
+import { getAuthenticatedUser } from '@/lib/session';
 
+// Force reload to pick up Prisma fix
 export async function POST(req: NextRequest) {
   try {
-    // 1. Get user session (Authentication)
-    // For now, if Auth is not yet fully configured, we'll use a placeholder user or check if it's there
-    // const session = await getServerSession(authOptions);
-    // if (!session?.user?.id) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-    // const userId = session.user.id;
-
-    // FOR DEVELOPMENT: Use a placeholder user ID until NextAuth is fully ready
-    // You should have at least one user in the database or use a static one for now
-    let user = await prisma.user.findFirst();
+    const user = await getAuthenticatedUser();
     if (!user) {
-      user = await prisma.user.create({
-        data: {
-          email: 'demo@example.com',
-          name: 'Demo User',
-        },
-      });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     const userId = user.id;
 
@@ -43,10 +27,9 @@ export async function POST(req: NextRequest) {
     const audioUrl = await uploadAudio(fileName, buffer, audioFile.type);
 
     // 4. Call AI service /process-checkin
-    // NOTE: In local dev, AI Service might not be running yet, so we'll add a try-catch
     let aiResult;
     try {
-      aiResult = await processCheckin(audioUrl);
+      aiResult = await processCheckin(buffer, fileName);
     } catch (aiError) {
       console.error('AI Service call failed, using mock data for development:', aiError);
       aiResult = {
@@ -76,14 +59,20 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({
-      sessionId: workSession.id,
+      id: workSession.id,
       topic: workSession.topic,
       startEmotion: workSession.startEmotion,
       startTime: workSession.startTime,
     });
 
-  } catch (error) {
-    console.error('Error starting session:', error);
-    return NextResponse.json({ error: 'Failed to start session' }, { status: 500 });
+  } catch (error: any) {
+    console.error('CRITICAL ERROR starting session:', error);
+    if (error.code) console.error('Error Code:', error.code);
+    if (error.meta) console.error('Error Meta:', error.meta);
+    return NextResponse.json({ 
+      error: 'Failed to start session', 
+      details: error.message,
+      code: error.code 
+    }, { status: 500 });
   }
 }

@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
-import { Outfit, Playfair_Display } from "next/font/google";
+import { Geist, Fraunces } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
+import { Providers } from "@/components/Providers";
 
-const outfit = Outfit({ 
+const geist = Geist({
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
-const playfair = Playfair_Display({
+const fraunces = Fraunces({
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-serif",
 });
 
 export const metadata: Metadata = {
-  title: "MoodFlow | Emotional Insight",
-  description: "Voice-driven emotional insight for work and study sessions",
+  title: "MoodFlow — Emotional Insight",
+  description: "A refined tool for tracking cognitive and emotional states during deep work.",
 };
 
 export default function RootLayout({
@@ -25,11 +26,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${outfit.variable} ${playfair.variable} font-sans bg-slate-50 text-slate-900 antialiased`}>
-        <div className="min-h-screen pb-32">
-          {children}
-        </div>
-        <Navigation />
+      <body className={`${geist.variable} ${fraunces.variable} font-sans bg-stone-50 text-stone-950 antialiased`}>
+        <Providers>
+          <div className="noise-bg" />
+          <div className="flex min-h-screen">
+            <Navigation />
+            <main className="flex-1 ml-20 xl:ml-64 p-8 xl:p-12 overflow-y-auto">
+              {children}
+            </main>
+          </div>
+        </Providers>
       </body>
     </html>
   );
