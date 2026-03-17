@@ -1,131 +1,174 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-
-const sidebarLinks = [
-  { label: 'Dashboard', href: '/dashboard', icon: null, active: false },
-  { label: 'Sessions', href: '/dashboard/sessions', icon: null, active: true },
-  { label: 'Insights', href: '/dashboard/insights', icon: null, active: false },
-  { label: 'Recordings', href: '/dashboard/recordings', icon: null, active: false },
-  { label: 'Settings', href: '/dashboard/settings', icon: null, active: false },
-]
-
-const sessions = [
-  { id: 1, title: 'Algorithms Study', duration: '1h 40m', date: 'Today', time: '2:30 PM', startEmotion: 'Calm', endEmotion: 'Focused', insight: 'Focus peaked at 25 minutes', score: 82 },
-  { id: 2, title: 'Math Problem Set', duration: '45m', date: 'Today', time: '10:00 AM', startEmotion: 'Focused', endEmotion: 'Stressed', insight: 'Stress increased after 30 min', score: 65 },
-  { id: 3, title: 'Reading Review', duration: '30m', date: 'Yesterday', time: '4:00 PM', startEmotion: 'Calm', endEmotion: 'Calm', insight: 'Consistent calm throughout', score: 91 },
-  { id: 4, title: 'Lab Report Writing', duration: '2h 15m', date: 'Yesterday', time: '9:00 AM', startEmotion: 'Focused', endEmotion: 'Fatigued', insight: 'Fatigue after 90 minutes', score: 48 },
-  { id: 5, title: 'Physics Lecture', duration: '1h 30m', date: '2 days ago', time: '11:00 AM', startEmotion: 'Calm', endEmotion: 'Focused', insight: 'Steady engagement', score: 78 },
-  { id: 6, title: 'Chemistry Notes', duration: '55m', date: '2 days ago', time: '3:00 PM', startEmotion: 'Focused', endEmotion: 'Focused', insight: 'High concentration throughout', score: 85 },
-  { id: 7, title: 'Essay Drafting', duration: '1h 20m', date: '3 days ago', time: '1:00 PM', startEmotion: 'Stressed', endEmotion: 'Calm', insight: 'Stress reduced after break', score: 72 },
-  { id: 8, title: 'Data Structures', duration: '2h', date: '3 days ago', time: '10:00 AM', startEmotion: 'Focused', endEmotion: 'Stressed', insight: 'Difficult section at 45 min', score: 55 },
-  { id: 9, title: 'Biology Quiz Prep', duration: '40m', date: '4 days ago', time: '5:00 PM', startEmotion: 'Calm', endEmotion: 'Focused', insight: 'Productive last 15 minutes', score: 80 },
-  { id: 10, title: 'Literature Review', duration: '1h 10m', date: '4 days ago', time: '9:00 AM', startEmotion: 'Focused', endEmotion: 'Fatigued', insight: 'Energy drop after 50 min', score: 62 },
-]
+import DashboardSidebar from '@/components/DashboardSidebar'
 
 const emotions = ['All', 'Calm', 'Focused', 'Stressed', 'Fatigued']
 const durations = ['All', 'Under 30m', '30-60m', '60-90m', 'Over 90m']
 
-export default function Sessions() {
+type SessionItem = {
+  id: string
+  title: string
+  durationMinutes: number
+  durationLabel: string
+  date: string
+  time: string
+  startEmotion: string
+  endEmotion: string
+  insight: string
+  score: number
+}
+
+function formatDuration(durationSeconds: number) {
+  const totalMinutes = Math.max(0, Math.round(durationSeconds / 60))
+  if (totalMinutes >= 60) {
+    const hours = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60
+    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`
+  }
+  return `${totalMinutes}m`
+}
+
+function getEmotionColor(emotion: string) {
+  switch (emotion) {
+    case 'Calm':
+      return 'bg-green-500/20 text-green-400 border-green-500/30'
+    case 'Focused':
+      return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+    case 'Stressed':
+      return 'bg-red-500/20 text-red-400 border-red-500/30'
+    case 'Fatigued':
+      return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+    default:
+      return 'bg-white/10 text-white/60 border-white/20'
+  }
+}
+
+function matchesDuration(durationMinutes: number, filter: string) {
+  if (filter === 'Under 30m') return durationMinutes < 30
+  if (filter === '30-60m') return durationMinutes >= 30 && durationMinutes <= 60
+  if (filter === '60-90m') return durationMinutes > 60 && durationMinutes <= 90
+  if (filter === 'Over 90m') return durationMinutes > 90
+  return true
+}
+
+export default function SessionsPage() {
   const [search, setSearch] = useState('')
   const [emotionFilter, setEmotionFilter] = useState('All')
   const [durationFilter, setDurationFilter] = useState('All')
   const [sortBy, setSortBy] = useState('newest')
   const [currentPage, setCurrentPage] = useState(1)
+  const [sessions, setSessions] = useState<SessionItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
   const sessionsPerPage = 5
 
-  const filteredSessions = sessions.filter(session => {
-    const matchesSearch = session.title.toLowerCase().includes(search.toLowerCase())
-    const matchesEmotion = emotionFilter === 'All' || session.startEmotion === emotionFilter || session.endEmotion === emotionFilter
-    let matchesDuration = true
-    if (durationFilter === 'Under 30m') matchesDuration = parseInt(session.duration) < 30
-    else if (durationFilter === '30-60m') matchesDuration = parseInt(session.duration) >= 30 && parseInt(session.duration) <= 60
-    else if (durationFilter === '60-90m') matchesDuration = parseInt(session.duration) > 60 && parseInt(session.duration) <= 90
-    else if (durationFilter === 'Over 90m') matchesDuration = parseInt(session.duration) > 90
-    return matchesSearch && matchesEmotion && matchesDuration
-  }).sort((a, b) => {
-    if (sortBy === 'newest') return 0
-    if (sortBy === 'oldest') return 1
-    if (sortBy === 'longest') return parseInt(b.duration) - parseInt(a.duration)
-    if (sortBy === 'highest') return b.score - a.score
-    return 0
-  })
+  async function loadSessions() {
+    const params = new URLSearchParams()
+    if (search) params.set('search', search)
+    if (emotionFilter !== 'All') params.set('emotion', emotionFilter)
+    params.set('sort', sortBy)
+    params.set('page', '1')
+    params.set('pageSize', '100')
 
-  const totalPages = Math.ceil(filteredSessions.length / sessionsPerPage)
+    const response = await fetch(`/api/sessions?${params.toString()}`, {
+      cache: 'no-store',
+    })
+
+    if (response.status === 401) {
+      window.location.href = '/login'
+      return
+    }
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({ error: 'Failed to load sessions' }))
+      throw new Error(payload.error || 'Failed to load sessions')
+    }
+
+    const payload = await response.json()
+    const mapped = (payload.items ?? []).map((item: any) => {
+      const startedAt = new Date(item.startedAt)
+      const durationMinutes = Math.max(0, Math.round((item.durationSeconds ?? 0) / 60))
+      return {
+        id: item.id,
+        title: item.title,
+        durationMinutes,
+        durationLabel: formatDuration(item.durationSeconds ?? 0),
+        date: startedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        time: startedAt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+        startEmotion: item.startEmotion ?? 'Calm',
+        endEmotion: item.endEmotion ?? item.dominantEmotion ?? 'Focused',
+        insight: item.summaryInsight ?? 'No summary insight yet',
+        score: item.score ?? 0,
+      } satisfies SessionItem
+    })
+
+    setSessions(mapped)
+  }
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [search, emotionFilter, durationFilter, sortBy])
+
+  useEffect(() => {
+    setIsLoading(true)
+    setError('')
+    loadSessions()
+      .catch((loadError) => {
+        setError(loadError instanceof Error ? loadError.message : 'Failed to load sessions')
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+  }, [search, emotionFilter, sortBy])
+
+  const filteredSessions = useMemo(() => {
+    return sessions
+      .filter((session) => matchesDuration(session.durationMinutes, durationFilter))
+      .sort((a, b) => {
+        if (sortBy === 'highest') return b.score - a.score
+        if (sortBy === 'longest') return b.durationMinutes - a.durationMinutes
+        return 0
+      })
+  }, [durationFilter, sessions, sortBy])
+
+  const totalPages = Math.max(1, Math.ceil(filteredSessions.length / sessionsPerPage))
   const paginatedSessions = filteredSessions.slice((currentPage - 1) * sessionsPerPage, currentPage * sessionsPerPage)
 
-  const totalSessions = sessions.length
-  const totalFocusTime = sessions.reduce((acc, s) => acc + parseInt(s.duration), 0)
-  const avgDuration = Math.round(totalFocusTime / totalSessions)
-  const mostCommonEmotion = 'Focused'
-
-  const getEmotionColor = (emotion: string) => {
-    switch (emotion) {
-      case 'Calm': return 'bg-green-500/20 text-green-400 border-green-500/30'
-      case 'Focused': return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-      case 'Stressed': return 'bg-red-500/20 text-red-400 border-red-500/30'
-      case 'Fatigued': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-      default: return 'bg-white/10 text-white/60 border-white/20'
-    }
-  }
+  const totalSessions = filteredSessions.length
+  const totalFocusTime = filteredSessions.reduce((acc, session) => acc + session.durationMinutes, 0)
+  const avgDuration = totalSessions > 0 ? Math.round(totalFocusTime / totalSessions) : 0
+  const mostCommonEmotion = filteredSessions.length > 0
+    ? Object.entries(
+        filteredSessions.reduce<Record<string, number>>((acc, session) => {
+          acc[session.endEmotion] = (acc[session.endEmotion] ?? 0) + 1
+          return acc
+        }, {}),
+      ).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'None'
+    : 'None'
 
   return (
     <div className="min-h-screen bg-black text-white flex">
-      {/* Sidebar */}
-      <aside className="w-52 border-r border-white/10 flex-shrink-0 fixed h-full">
-        <div className="p-4">
-          <Link href="/" className="flex items-center gap-2 mb-6">
-            <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center">
-              <span className="text-black font-bold text-xs">M</span>
-            </div>
-            <span className="text-white font-semibold text-sm">MoodFlow</span>
-          </Link>
+      <DashboardSidebar active="Sessions" />
 
-          <nav className="space-y-0.5">
-            {sidebarLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  link.active
-                    ? 'bg-white text-black'
-                    : 'text-white/50 hover:text-white hover:bg-white/5'
-                }`}
-               >
-                 {link.icon && <span className="w-4 text-center text-xs">{link.icon}</span>}
-                 {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        <div className="absolute bottom-0 w-52 p-4 border-t border-white/10">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-500" />
-            <div>
-              <p className="text-sm font-medium">John</p>
-              <p className="text-xs text-white/50">Free Plan</p>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-       {/* Main Content */}
-       <main className="flex-1 ml-52 overflow-auto flex justify-center">
-         <div className="p-6 w-full max-w-6xl">
-          {/* Header */}
+      <main className="flex-1 ml-52 overflow-auto flex justify-center">
+        <div className="p-6 w-full max-w-6xl">
           <div className="mb-6">
             <h1 className="text-xl font-semibold mb-1">Sessions</h1>
             <p className="text-white/50 text-sm">View and manage your recorded work sessions</p>
           </div>
 
-          {/* Summary Metrics */}
+          {error && (
+            <div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {error}
+            </div>
+          )}
+
           <div className="grid grid-cols-4 gap-4 mb-6">
             {[
               { label: 'Total Sessions', value: totalSessions },
-              { label: 'Total Focus Time', value: `${totalFocusTime}h` },
+              { label: 'Total Focus Time', value: `${Math.round(totalFocusTime / 60)}h` },
               { label: 'Avg Duration', value: `${avgDuration}m` },
               { label: 'Top Emotion', value: mostCommonEmotion },
             ].map((stat, i) => (
@@ -137,15 +180,13 @@ export default function Sessions() {
                 className="bg-white/5 border border-white/10 rounded-xl p-4"
               >
                 <p className="text-white/50 text-sm mb-1">{stat.label}</p>
-                <p className="text-2xl font-semibold">{stat.value}</p>
+                <p className="text-2xl font-semibold">{isLoading ? '...' : stat.value}</p>
               </motion.div>
             ))}
           </div>
 
-          {/* Filters & Search */}
           <div className="flex items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-3 flex-1">
-              {/* Search */}
               <div className="relative flex-1 max-w-xs">
                 <input
                   type="text"
@@ -159,26 +200,27 @@ export default function Sessions() {
                 </svg>
               </div>
 
-              {/* Emotion Filter */}
               <select
                 value={emotionFilter}
                 onChange={(e) => setEmotionFilter(e.target.value)}
                 className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-white/30"
               >
-                {emotions.map(e => <option key={e} value={e} className="bg-black">{e}</option>)}
+                {emotions.map((emotion) => (
+                  <option key={emotion} value={emotion} className="bg-black">{emotion}</option>
+                ))}
               </select>
 
-              {/* Duration Filter */}
               <select
                 value={durationFilter}
                 onChange={(e) => setDurationFilter(e.target.value)}
                 className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-white/30"
               >
-                {durations.map(d => <option key={d} value={d} className="bg-black">{d}</option>)}
+                {durations.map((duration) => (
+                  <option key={duration} value={duration} className="bg-black">{duration}</option>
+                ))}
               </select>
             </div>
 
-            {/* Sort */}
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
@@ -191,8 +233,13 @@ export default function Sessions() {
             </select>
           </div>
 
-          {/* Sessions List */}
           <div className="space-y-3 mb-6">
+            {!isLoading && paginatedSessions.length === 0 && (
+              <div className="rounded-xl border border-dashed border-white/10 bg-white/5 p-8 text-center text-sm text-white/35">
+                No sessions match the current filters.
+              </div>
+            )}
+
             {paginatedSessions.map((session, i) => (
               <motion.div
                 key={session.id}
@@ -208,7 +255,7 @@ export default function Sessions() {
                       <span className="text-xs text-white/40">{session.date} at {session.time}</span>
                     </div>
                     <div className="flex items-center gap-4 text-sm">
-                      <span className="text-white/60">{session.duration}</span>
+                      <span className="text-white/60">{session.durationLabel}</span>
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-0.5 rounded border text-xs ${getEmotionColor(session.startEmotion)}`}>
                           {session.startEmotion}
@@ -225,9 +272,7 @@ export default function Sessions() {
                       <div className="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${
-                            session.score > 80 ? 'bg-green-500' :
-                            session.score > 60 ? 'bg-blue-500' :
-                            'bg-yellow-500'
+                            session.score > 80 ? 'bg-green-500' : session.score > 60 ? 'bg-blue-500' : 'bg-yellow-500'
                           }`}
                           style={{ width: `${session.score}%` }}
                         />
@@ -241,34 +286,31 @@ export default function Sessions() {
             ))}
           </div>
 
-          {/* Pagination */}
           <div className="flex items-center justify-between">
             <p className="text-sm text-white/50">
-              Showing {((currentPage - 1) * sessionsPerPage) + 1} to {Math.min(currentPage * sessionsPerPage, filteredSessions.length)} of {filteredSessions.length} sessions
+              Showing {filteredSessions.length === 0 ? 0 : ((currentPage - 1) * sessionsPerPage) + 1} to {Math.min(currentPage * sessionsPerPage, filteredSessions.length)} of {filteredSessions.length} sessions
             </p>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
                 disabled={currentPage === 1}
                 className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
                   className={`px-3 py-1.5 rounded-lg text-sm ${
-                    currentPage === page
-                      ? 'bg-white text-black'
-                      : 'bg-white/5 border border-white/10 hover:bg-white/10'
+                    currentPage === page ? 'bg-white text-black' : 'bg-white/5 border border-white/10 hover:bg-white/10'
                   }`}
                 >
                   {page}
                 </button>
               ))}
               <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
                 disabled={currentPage === totalPages}
                 className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
               >

@@ -2,17 +2,48 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 
 export default function LoginPage() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
+  const [error, setError] = useState('')
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setTimeout(() => setIsLoading(false), 2000)
+    setError('')
+
+    try {
+      const response = await fetch(mode === 'signin' ? '/api/auth/login' : '/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      })
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({ error: 'Authentication failed' }))
+        throw new Error(payload.error || 'Authentication failed')
+      }
+
+      router.push('/dashboard')
+      router.refresh()
+    } catch (submissionError) {
+      setError(submissionError instanceof Error ? submissionError.message : 'Authentication failed')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const shapes = useMemo(() => [
@@ -109,11 +140,31 @@ export default function LoginPage() {
           </Link>
 
           <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-2">Sign in</h2>
-            <p className="text-white/50">Enter your email to sign in to your account</p>
+            <h2 className="text-2xl font-semibold mb-2">{mode === 'signin' ? 'Sign in' : 'Create account'}</h2>
+            <p className="text-white/50">
+              {mode === 'signin'
+                ? 'Enter your email to sign in to your account'
+                : 'Create an account to start saving sessions and recordings'}
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {mode === 'signup' && (
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium mb-2">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="John Doe"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                  required={mode === 'signup'}
+                />
+              </div>
+            )}
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-2">
                 Email
@@ -160,12 +211,16 @@ export default function LoginPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Signing in...
+                  {mode === 'signin' ? 'Signing in...' : 'Creating account...'}
                 </>
               ) : (
-                'Sign in'
+                mode === 'signin' ? 'Sign in' : 'Create account'
               )}
             </button>
+
+            {error && (
+              <p className="text-sm text-red-400">{error}</p>
+            )}
           </form>
 
           <div className="mt-8">
@@ -198,10 +253,17 @@ export default function LoginPage() {
           </div>
 
           <p className="mt-8 text-center text-sm text-white/50">
-            Don&apos;t have an account?{' '}
-            <a href="#" className="text-white hover:underline font-medium">
-              Sign up for free
-            </a>
+            {mode === 'signin' ? "Don't have an account?" : 'Already have an account?'}{' '}
+            <button
+              type="button"
+              onClick={() => {
+                setError('')
+                setMode(mode === 'signin' ? 'signup' : 'signin')
+              }}
+              className="text-white hover:underline font-medium"
+            >
+              {mode === 'signin' ? 'Sign up for free' : 'Sign in'}
+            </button>
           </p>
         </motion.div>
       </div>
