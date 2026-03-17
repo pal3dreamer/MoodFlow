@@ -5,11 +5,11 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 
 const sidebarLinks = [
-  { label: 'Dashboard', href: '/dashboard', icon: '◉', active: false },
-  { label: 'Sessions', href: '/dashboard/sessions', icon: '◇', active: false },
-  { label: 'Insights', href: '/dashboard/insights', icon: '◈', active: true },
-  { label: 'Recordings', href: '/dashboard/recordings', icon: '▸', active: false },
-  { label: 'Settings', href: '/dashboard/settings', icon: '⚙', active: false },
+  { label: 'Dashboard', href: '/dashboard', icon: null, active: false },
+  { label: 'Sessions', href: '/dashboard/sessions', icon: null, active: false },
+  { label: 'Insights', href: '/dashboard/insights', icon: null, active: true },
+  { label: 'Recordings', href: '/dashboard/recordings', icon: null, active: false },
+  { label: 'Settings', href: '/dashboard/settings', icon: null, active: false },
 ]
 
 const vadData = [
@@ -58,11 +58,11 @@ const emotionDistribution = [
 ]
 
 const audioSegments = [
-  { time: '12:20', emotion: 'Frustration', duration: '2 min', icon: '😤' },
-  { time: '18:40', emotion: 'Engagement Peak', duration: '5 min', icon: '🎯' },
-  { time: '24:10', emotion: 'Fatigue Detected', duration: '8 min', icon: '😴' },
-  { time: '35:00', emotion: 'Stress Spike', duration: '3 min', icon: '⚡' },
-  { time: '45:30', emotion: 'Flow State', duration: '10 min', icon: '✨' },
+  { time: '12:20', emotion: 'Frustration', duration: '2 min', icon: null },
+  { time: '18:40', emotion: 'Engagement Peak', duration: '5 min', icon: null },
+  { time: '24:10', emotion: 'Fatigue Detected', duration: '8 min', icon: null },
+  { time: '35:00', emotion: 'Stress Spike', duration: '3 min', icon: null },
+  { time: '45:30', emotion: 'Flow State', duration: '10 min', icon: null },
 ]
 
 const aiInsights = [
@@ -111,9 +111,9 @@ export default function Insights() {
                     ? 'bg-white text-black'
                     : 'text-white/50 hover:text-white hover:bg-white/5'
                 }`}
-              >
-                <span className="w-4 text-center text-xs">{link.icon}</span>
-                {link.label}
+               >
+                 {link.icon && <span className="w-4 text-center text-xs">{link.icon}</span>}
+                 {link.label}
               </Link>
             ))}
           </nav>
@@ -130,9 +130,9 @@ export default function Insights() {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 ml-52 overflow-auto">
-        <div className="p-6 w-full">
+       {/* Main Content */}
+       <main className="flex-1 ml-52 overflow-auto flex justify-center">
+         <div className="p-6 w-full max-w-6xl">
           {/* Header */}
           <div className="mb-6">
             <h1 className="text-xl font-semibold mb-1">Insights</h1>
@@ -156,17 +156,17 @@ export default function Insights() {
             ))}
           </div>
 
-          {/* VAD Emotional Trajectory - Main Visualization */}
-          <div className="grid grid-cols-12 gap-4 mb-4">
-            <div className="col-span-8 bg-white/5 border border-white/10 rounded-xl p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-medium">Emotional Trajectory (VAD)</h2>
-                <div className="flex items-center gap-4 text-xs text-white/50">
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400" /> Valence</span>
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400" /> Arousal</span>
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-400" /> Dominance</span>
-                </div>
-              </div>
+           {/* VAD Emotional Trajectory - Main Visualization */}
+           <div className="grid grid-cols-12 gap-4 mb-4">
+             <div className="col-span-9 bg-white/5 border border-white/10 rounded-xl p-5">
+               <div className="mb-4">
+                 <h2 className="text-base font-medium mb-4">Emotional Trajectory (VAD)</h2>
+                 <div className="flex flex-wrap items-center gap-6 text-xs text-white/50">
+                   <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400" /> Valence</span>
+                   <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400" /> Arousal</span>
+                   <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-400" /> Dominance</span>
+                 </div>
+               </div>
               
               <div className="relative h-32 mb-2">
                 <svg className="w-full h-full" viewBox="0 0 500 100" preserveAspectRatio="none">
@@ -219,25 +219,22 @@ export default function Insights() {
                 </div>
               </div>
 
-              {/* Insight Markers */}
-              <div className="flex items-center gap-4 text-xs">
-                <div className="flex items-center gap-1 text-red-400">
-                  <span>⚡</span>
-                  <span>Stress spike at 50 min</span>
-                </div>
-                <div className="flex items-center gap-1 text-blue-400">
-                  <span>🎯</span>
-                  <span>Focus peak at 20 min</span>
-                </div>
-                <div className="flex items-center gap-1 text-yellow-400">
-                  <span>🔻</span>
-                  <span>Energy drop at 60 min</span>
-                </div>
-              </div>
+               {/* Insight Markers */}
+               <div className="flex items-center gap-4 text-xs">
+                 <div className="flex items-center gap-1 text-red-400">
+                   <span>Stress spike at 50 min</span>
+                 </div>
+                 <div className="flex items-center gap-1 text-blue-400">
+                   <span>Focus peak at 20 min</span>
+                 </div>
+                 <div className="flex items-center gap-1 text-yellow-400">
+                   <span>Energy drop at 60 min</span>
+                 </div>
+               </div>
             </div>
 
             {/* Stress & Focus Metrics */}
-            <div className="col-span-4 flex flex-col gap-4">
+            <div className="col-span-3 flex flex-col gap-4">
               <div className="bg-white/5 border border-white/10 rounded-xl p-5 flex-1">
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-base font-medium">Focus Stability</h2>
@@ -255,150 +252,99 @@ export default function Insights() {
             </div>
           </div>
 
-          {/* Second Row */}
-          <div className="grid grid-cols-12 gap-4 mb-4">
-            {/* Emotion Timeline Breakdown */}
-            <div className="col-span-4 bg-white/5 border border-white/10 rounded-xl p-5">
-              <h2 className="text-base font-medium mb-4">Emotion Timeline Breakdown</h2>
-              <div className="space-y-2">
-                {emotionTimeline.map((item, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="flex items-center gap-3"
-                  >
-                    <div className={`w-3 h-3 rounded-full ${item.color}`} />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{item.emotion}</span>
-                        <span className="text-xs text-white/50">{item.duration}</span>
-                      </div>
-                      <span className="text-xs text-white/40">{item.range}</span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
+           {/* Second Row */}
+           <div className="grid grid-cols-12 gap-4 mb-4">
+             {/* Emotion Timeline Breakdown */}
+             <div className="col-span-3 bg-white/5 border border-white/10 rounded-xl p-5">
+               <h2 className="text-base font-medium mb-4">Emotion Timeline Breakdown</h2>
+               <div className="space-y-2">
+                 {emotionTimeline.map((item, i) => (
+                   <motion.div
+                     key={i}
+                     initial={{ opacity: 0, x: -10 }}
+                     animate={{ opacity: 1, x: 0 }}
+                     transition={{ delay: i * 0.1 }}
+                     className="flex items-center gap-3"
+                   >
+                     <div className={`w-3 h-3 rounded-full ${item.color}`} />
+                     <div className="flex-1">
+                       <div className="flex items-center justify-between">
+                         <span className="text-sm font-medium">{item.emotion}</span>
+                         <span className="text-xs text-white/50">{item.duration}</span>
+                       </div>
+                       <span className="text-xs text-white/40">{item.range}</span>
+                     </div>
+                   </motion.div>
+                 ))}
+               </div>
+             </div>
 
-            {/* Session Phases */}
-            <div className="col-span-4 bg-white/5 border border-white/10 rounded-xl p-5">
-              <h2 className="text-base font-medium mb-4">Session Phases</h2>
-              <div className="space-y-3">
-                {sessionPhases.map((phase, i) => (
-                  <div key={phase.phase} className="flex items-center gap-3">
-                    <div className="w-16 text-xs text-white/50">{phase.phase}</div>
-                    <div className="flex-1">
-                      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${phase.score}%` }}
-                          transition={{ duration: 0.5, delay: i * 0.1 }}
-                          className={`h-full rounded-full ${
-                            phase.score > 80 ? 'bg-green-500' :
-                            phase.score > 60 ? 'bg-blue-500' :
-                            phase.score > 40 ? 'bg-yellow-500' :
-                            'bg-red-500'
-                          }`}
-                        />
-                      </div>
-                    </div>
-                    <span className="text-xs text-white/50 w-12">{phase.score}%</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+             {/* Session Phases */}
+             <div className="col-span-3 bg-white/5 border border-white/10 rounded-xl p-5">
+               <h2 className="text-base font-medium mb-4">Session Phases</h2>
+               <div className="space-y-3">
+                 {sessionPhases.map((phase, i) => (
+                   <div key={phase.phase} className="flex items-center gap-3">
+                     <div className="w-16 text-xs text-white/50">{phase.phase}</div>
+                     <div className="flex-1">
+                       <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                         <motion.div
+                           initial={{ width: 0 }}
+                           animate={{ width: `${phase.score}%` }}
+                           transition={{ duration: 0.5, delay: i * 0.1 }}
+                           className={`h-full rounded-full ${
+                             phase.score > 80 ? 'bg-green-500' :
+                             phase.score > 60 ? 'bg-blue-500' :
+                             phase.score > 40 ? 'bg-yellow-500' :
+                             'bg-red-500'
+                           }`}
+                         />
+                       </div>
+                     </div>
+                     <span className="text-xs text-white/50 w-12">{phase.score}%</span>
+                   </div>
+                 ))}
+               </div>
+             </div>
 
-            {/* Emotion Distribution */}
-            <div className="col-span-4 bg-white/5 border border-white/10 rounded-xl p-5">
-              <h2 className="text-base font-medium mb-4">Emotion Distribution</h2>
-              <div className="space-y-3">
-                {emotionDistribution.map((item) => (
-                  <div key={item.emotion}>
-                    <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-white/70">{item.emotion}</span>
-                      <span className="text-white/50">{item.value}%</span>
-                    </div>
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${item.value}%` }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
-                        className={`h-full ${item.color} rounded-full`}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+             {/* Emotion Distribution */}
+             <div className="col-span-3 bg-white/5 border border-white/10 rounded-xl p-5">
+               <h2 className="text-base font-medium mb-4">Emotion Distribution</h2>
+               <div className="space-y-3">
+                 {emotionDistribution.map((item) => (
+                   <div key={item.emotion}>
+                     <div className="flex items-center justify-between text-sm mb-1">
+                       <span className="text-white/70">{item.emotion}</span>
+                       <span className="text-white/50">{item.value}%</span>
+                     </div>
+                     <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                       <motion.div
+                         initial={{ width: 0 }}
+                         animate={{ width: `${item.value}%` }}
+                         transition={{ duration: 0.5, delay: 0.2 }}
+                         className={`h-full ${item.color} rounded-full`}
+                       />
+                     </div>
+                   </div>
+                 ))}
+               </div>
+             </div>
 
-          {/* Third Row */}
-          <div className="grid grid-cols-12 gap-4 mb-4">
-            {/* Weekly Trends */}
-            <div className="col-span-6 bg-white/5 border border-white/10 rounded-xl p-5">
-              <h2 className="text-base font-medium mb-4">Weekly Emotional Trends</h2>
-              <div className="flex items-end justify-between h-28 gap-2">
-                {weeklyData.map((day, i) => (
-                  <div key={day.day} className="flex-1 flex flex-col items-center gap-1">
-                    <div className="w-full flex flex-col gap-px">
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: `${day.focus * 0.8}px` }}
-                        transition={{ duration: 0.4, delay: i * 0.05 }}
-                        className="w-full bg-blue-500/60 rounded-t-sm"
-                      />
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: `${day.stress * 0.8}px` }}
-                        transition={{ duration: 0.4, delay: i * 0.05 + 0.1 }}
-                        className="w-full bg-red-500/40 rounded-t-sm"
-                      />
-                    </div>
-                    <div className="text-center">
-                      <span className="text-xs text-white/40 block">{day.day}</span>
-                      <span className="text-[10px] text-white/30">{day.emotion}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex items-center gap-4 mt-3 text-xs text-white/50">
-                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-blue-500/60" /> Focus</span>
-                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-red-500/40" /> Stress</span>
-              </div>
-            </div>
-
-            {/* AI Insights */}
-            <div className="col-span-3 bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-white/10 rounded-xl p-5">
-              <h2 className="text-base font-medium mb-3 flex items-center gap-2">
-                <span>◇</span> AI Insights
-              </h2>
-              <div className="space-y-3">
-                {aiInsights.map((insight, i) => (
-                  <div key={i} className="flex items-start gap-2 text-sm text-white/70">
-                    <span className="text-lg">💡</span>
-                    <p>{insight.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* AI Recommendations */}
-            <div className="col-span-3 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-white/10 rounded-xl p-5">
-              <h2 className="text-base font-medium mb-3 flex items-center gap-2">
-                <span>✓</span> Recommendations
-              </h2>
-              <div className="space-y-2">
-                {aiRecommendations.map((rec, i) => (
-                  <div key={i} className="flex items-start gap-2 text-sm text-white/70">
-                    <span className="text-green-400">•</span>
-                    <p>{rec}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+             {/* Recommendations */}
+             <div className="col-span-3 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-white/10 rounded-xl p-5">
+               <h2 className="text-base font-medium mb-3">
+                 Recommendations
+               </h2>
+               <div className="space-y-2">
+                 {aiRecommendations.map((rec, i) => (
+                   <div key={i} className="flex items-start gap-2 text-sm text-white/70">
+                     <span className="text-green-400">•</span>
+                     <p>{rec}</p>
+                   </div>
+                 ))}
+               </div>
+             </div>
+           </div>
 
           {/* Fourth Row */}
           <div className="grid grid-cols-12 gap-4">
@@ -414,13 +360,12 @@ export default function Insights() {
                     transition={{ delay: i * 0.1 }}
                     className="flex items-center justify-between p-3 rounded-lg hover:bg-white/5 cursor-pointer"
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">{segment.icon}</span>
-                      <div>
-                        <p className="text-sm font-medium">{segment.emotion}</p>
-                        <p className="text-xs text-white/50">{segment.duration}</p>
-                      </div>
-                    </div>
+                   <div className="flex items-center gap-3">
+                       <div>
+                         <p className="text-sm font-medium">{segment.emotion}</p>
+                         <p className="text-xs text-white/50">{segment.duration}</p>
+                       </div>
+                     </div>
                     <span className="text-sm text-white/50">{segment.time}</span>
                   </motion.div>
                 ))}

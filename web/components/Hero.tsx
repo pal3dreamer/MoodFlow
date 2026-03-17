@@ -12,26 +12,25 @@ export default function Hero() {
         transition={{ duration: 0.8, ease: 'easeOut' }}
         className="max-w-3xl mx-auto text-center"
       >
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-5xl md:text-7xl font-bold mb-6 tracking-tight"
-        >
-          <span className="text-white">Analyze. Optimize.</span>
-          <br />
-          <span className="text-white/60">Transform.</span>
-        </motion.h1>
+         <motion.h1
+           initial={{ opacity: 0, y: 20 }}
+           animate={{ opacity: 1, y: 0 }}
+           transition={{ delay: 0.2 }}
+           className="text-5xl md:text-7xl font-bold mb-6 tracking-tight"
+         >
+           <span className="text-white">Your work has a pattern.</span>
+           <br />
+           <span className="text-white/60">Your emotions reveal it.</span>
+         </motion.h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="text-white/60 text-lg md:text-xl max-w-xl mx-auto mb-10"
-        >
-          Unlock the power of AI to analyze your workflows, identify patterns, 
-          and optimize your productivity with intelligent insights.
-        </motion.p>
+         <motion.p
+           initial={{ opacity: 0, y: 20 }}
+           animate={{ opacity: 1, y: 0 }}
+           transition={{ delay: 0.4 }}
+           className="text-white/60 text-lg md:text-xl max-w-xl mx-auto mb-10"
+         >
+           Record short voice check-ins and discover how your emotional state changes during your work or study sessions.
+         </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
