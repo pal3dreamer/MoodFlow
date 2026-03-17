@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserPlan {
+  FREE
+  PRO
+}
+
+enum FocusSessionStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum RecordingKind {
+  CHECKIN
+  SESSION_AUDIO
+}
+
+enum RecordingStatus {
+  UPLOADED
+  QUEUED
+  PROCESSING
+  ANALYZED
+  FAILED
+}
+
+model User {
+  id           String         @id @default(cuid())
+  name         String
+  email        String         @unique
+  passwordHash String
+  avatarUrl    String?
+  plan         UserPlan       @default(FREE)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  sessions     AuthSession[]
+  focusSessions FocusSession[]
+  recordings   Recording[]
+  preferences  UserPreference?
+}
+
+model AuthSession {
+  id           String   @id @default(cuid())
+  token        String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model FocusSession {
+  id                    String             @id @default(cuid())
+  title                 String
+  topic                 String?
+  status                FocusSessionStatus @default(ACTIVE)
+  startedAt             DateTime           @default(now())
+  endedAt               DateTime?
+  durationSeconds       Int                @default(0)
+  startEmotion          String?
+  endEmotion            String?
+  dominantEmotion       String?
+  score                 Int                @default(0)
+  summaryInsight        String?
+  stressSpikeTimestamp  Int?
+  focusPeakTimestamp    Int?
+  userId                String
+  user                  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recordings            Recording[]
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+
+  @@index([userId, startedAt])
+  @@index([status])
+}
+
+model Recording {
+  id                       String          @id @default(cuid())
+  title                    String
+  kind                     RecordingKind
+  status                   RecordingStatus @default(UPLOADED)
+  filename                 String
+  mimeType                 String
+  byteSize                 Int
+  durationSeconds          Int             @default(0)
+  bucket                   String
+  objectKey                String          @unique
+  etag                     String?
+  transcript               String?
+  topic                    String?
+  dominantEmotion          String?
+  analysisVersion          String?
+  emotionTrajectory        Json?
+  vadSeries                Json?
+  distribution             Json?
+  segments                 Json?
+  aiInsights               Json?
+  aiRecommendations        Json?
+  processingError          String?
+  processedAt              DateTime?
+  createdAt                DateTime        @default(now())
+  updatedAt                DateTime        @updatedAt
+  userId                   String
+  user                     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  focusSessionId           String?
+  focusSession             FocusSession?   @relation(fields: [focusSessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([focusSessionId])
+  @@index([status])
+}
+
+model UserPreference {
+  id                  String   @id @default(cuid())
+  sessionNameFormat   String   @default("topic-date")
+  durationReminder    Int      @default(45)
+  autoEnd             Boolean  @default(true)
+  autoInsights        Boolean  @default(true)
+  trajectoryTracking  Boolean  @default(true)
+  stressDetection     Boolean  @default(true)
+  patternAnalysis     Boolean  @default(true)
+  aiRecommendations   Boolean  @default(true)
+  audioFormat         String   @default("webm")
+  audioQuality        String   @default("high")
+  microphone          String   @default("default")
+  sessionReminders    Boolean  @default(true)
+  breakReminders      Boolean  @default(true)
+  weeklyInsights      Boolean  @default(false)
+  trendSummaries      Boolean  @default(true)
+  dataStorage         Boolean  @default(true)
+  anonymizedData      Boolean  @default(false)
+  theme               String   @default("dark")
+  graphAnimation      Boolean  @default(true)
+  reducedMotion       Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
