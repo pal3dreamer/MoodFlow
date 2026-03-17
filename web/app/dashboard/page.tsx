@@ -5,11 +5,11 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 
 const sidebarLinks = [
-  { label: 'Dashboard', href: '/dashboard', icon: '◉', active: true },
-  { label: 'Sessions', href: '/dashboard/sessions', icon: '◇' },
-  { label: 'Insights', href: '/dashboard/insights', icon: '◈' },
-  { label: 'Recordings', href: '/dashboard/recordings', icon: '▸' },
-  { label: 'Settings', href: '/dashboard/settings', icon: '⚙' },
+  { label: 'Dashboard', href: '/dashboard', icon: null, active: true },
+  { label: 'Sessions', href: '/dashboard/sessions', icon: null },
+  { label: 'Insights', href: '/dashboard/insights', icon: null },
+  { label: 'Recordings', href: '/dashboard/recordings', icon: null },
+  { label: 'Settings', href: '/dashboard/settings', icon: null },
 ]
 
 const emotionDistribution = [
@@ -36,9 +36,9 @@ const weeklyTrends = [
 ]
 
 const insights = [
-  { type: 'stress', text: 'Stressed after 45 min', icon: '⚡' },
-  { type: 'productivity', text: 'Best: 20–40 min sessions', icon: '◎' },
-  { type: 'pattern', text: 'Focus best Tue/Fri AM', icon: '◇' },
+  { type: 'stress', text: 'Stressed after 45 min', icon: null },
+  { type: 'productivity', text: 'Best: 20–40 min sessions', icon: null },
+  { type: 'pattern', text: 'Focus best Tue/Fri AM', icon: null },
 ]
 
 export default function Dashboard() {
@@ -66,9 +66,9 @@ export default function Dashboard() {
                     ? 'bg-white text-black'
                     : 'text-white/50 hover:text-white hover:bg-white/5'
                 }`}
-              >
-                <span className="w-4 text-center text-xs">{link.icon}</span>
-                {link.label}
+               >
+                 {link.icon && <span className="w-4 text-center text-xs">{link.icon}</span>}
+                 {link.label}
               </Link>
             ))}
           </nav>
@@ -85,9 +85,9 @@ export default function Dashboard() {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 ml-52">
-        <div className="p-6 w-full">
+       {/* Main Content */}
+       <main className="flex-1 ml-52 overflow-auto flex justify-center">
+         <div className="p-6 w-full max-w-6xl">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -181,10 +181,9 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 rounded-lg px-3 py-2">
-                <span>⚡</span>
-                <span>Stress spike at 10:30 AM (45 min mark)</span>
-              </div>
+               <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 rounded-lg px-3 py-2">
+                 <span>Stress spike at 10:30 AM (45 min mark)</span>
+               </div>
             </div>
 
             {/* Right Column - 4 columns */}
@@ -301,16 +300,15 @@ export default function Dashboard() {
 
             {/* AI Insights - 3 columns */}
             <div className="col-span-3 bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-white/10 rounded-xl p-5">
-              <h2 className="text-base font-medium mb-3 flex items-center gap-2">
-                <span>◇</span> AI Insights
-              </h2>
+               <h2 className="text-base font-medium mb-3">
+                 AI Insights
+               </h2>
               <div className="space-y-3">
-                {insights.map((insight, i) => (
-                  <div key={i} className="flex items-start gap-2 text-sm text-white/70">
-                    <span className="text-lg">{insight.icon}</span>
-                    <p>{insight.text}</p>
-                  </div>
-                ))}
+                 {insights.map((insight, i) => (
+                   <div key={i} className="flex items-start gap-2 text-sm text-white/70">
+                     <p>{insight.text}</p>
+                   </div>
+                 ))}
               </div>
             </div>
           </div>

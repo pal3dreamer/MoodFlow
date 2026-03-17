@@ -5,11 +5,11 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 
 const sidebarLinks = [
-  { label: 'Dashboard', href: '/dashboard', icon: '◉', active: false },
-  { label: 'Sessions', href: '/dashboard/sessions', icon: '◇', active: false },
-  { label: 'Insights', href: '/dashboard/insights', icon: '◈', active: false },
-  { label: 'Recordings', href: '/dashboard/recordings', icon: '▸', active: true },
-  { label: 'Settings', href: '/dashboard/settings', icon: '⚙', active: false },
+  { label: 'Dashboard', href: '/dashboard', icon: null, active: false },
+  { label: 'Sessions', href: '/dashboard/sessions', icon: null, active: false },
+  { label: 'Insights', href: '/dashboard/insights', icon: null, active: false },
+  { label: 'Recordings', href: '/dashboard/recordings', icon: null, active: true },
+  { label: 'Settings', href: '/dashboard/settings', icon: null, active: false },
 ]
 
 const recordings = [
@@ -107,9 +107,9 @@ export default function Recordings() {
                     ? 'bg-white text-black'
                     : 'text-white/50 hover:text-white hover:bg-white/5'
                 }`}
-              >
-                <span className="w-4 text-center text-xs">{link.icon}</span>
-                {link.label}
+               >
+                 {link.icon && <span className="w-4 text-center text-xs">{link.icon}</span>}
+                 {link.label}
               </Link>
             ))}
           </nav>
@@ -126,9 +126,9 @@ export default function Recordings() {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 ml-52 overflow-auto">
-        <div className="p-6 w-full">
+       {/* Main Content */}
+       <main className="flex-1 ml-52 overflow-auto flex justify-center">
+         <div className="p-6 w-full max-w-6xl">
           {/* Header */}
           <div className="mb-6">
             <h1 className="text-xl font-semibold mb-1">Recordings</h1>
