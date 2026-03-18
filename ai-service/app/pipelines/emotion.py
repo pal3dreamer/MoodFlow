@@ -61,7 +61,10 @@ class EmotionDetectionPipeline:
         
         self._model = EmotionModel(config)
         
-        model_path = self._get_model_path()
+        # Explicitly download the model weights file using huggingface_hub
+        from huggingface_hub import hf_hub_download
+        model_path = hf_hub_download(repo_id=self.model_name, filename="model.safetensors")
+        
         logger.info(f"Loading weights from: {model_path}")
         
         with safe_open(model_path, framework="pt") as f:
@@ -79,15 +82,6 @@ class EmotionDetectionPipeline:
         
         self._loaded = True
         logger.info("  Emotion model loaded successfully")
-
-    def _get_model_path(self):
-        cache_dir = os.path.expanduser("~/.cache/huggingface/hub")
-        model_dir = f"models--{self.model_name.replace('/', '--')}"
-        for root, dirs, files in os.walk(os.path.join(cache_dir, model_dir)):
-            for f in files:
-                if f.endswith(".safetensors"):
-                    return os.path.join(root, f)
-        raise FileNotFoundError(f"Model weights not found for {self.model_name}")
 
     def detect_emotions(self, audio_tensor: torch.Tensor) -> Dict[str, float]:
         if not self._loaded:
