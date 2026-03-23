@@ -1,5 +1,4 @@
 skills-lock.json
 .agents/
 web/node_modules
-.env
 web/.next/

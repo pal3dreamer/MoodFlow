@@ -303,30 +303,6 @@ export default function SettingsPage() {
             </div>
           </Section>
 
-          <Section title="Session Preferences">
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm text-black/60 dark:text-white/60 mb-2">Default Session Name Format</label>
-                  <select value={settings.sessionNameFormat} onChange={(e) => handleSettingsChange({ sessionNameFormat: e.target.value })} className="w-full px-3 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:border-blue-500/50 bg-white dark:bg-black">
-                    <option value="topic-date">Topic + Date</option>
-                    <option value="date-topic">Date + Topic</option>
-                    <option value="topic">Topic Only</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm text-black/60 dark:text-white/60 mb-2">Duration Reminder (minutes)</label>
-                  <select value={settings.durationReminder} onChange={(e) => handleSettingsChange({ durationReminder: e.target.value })} className="w-full px-3 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:border-blue-500/50 bg-white dark:bg-black">
-                    <option value="30">30</option>
-                    <option value="45">45</option>
-                    <option value="60">60</option>
-                    <option value="90">90</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </Section>
-
           <Section title="Audio Recording">
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -366,13 +342,6 @@ export default function SettingsPage() {
 
           <Section title="Privacy">
             <div className="space-y-2">
-              <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-white/5">
-                <div>
-                  <p className="text-sm font-medium">Emotional Data Storage</p>
-                  <p className="text-xs text-black/40 dark:text-white/40">Store emotional analysis data locally</p>
-                </div>
-                <Toggle enabled={settings.dataStorage} onChange={(value) => handleSettingsChange({ dataStorage: value })} />
-              </div>
               <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-white/5">
                 <div>
                   <p className="text-sm font-medium">Anonymized Model Improvement</p>
