@@ -7,47 +7,21 @@ import DashboardSidebar from '@/components/DashboardSidebar'
 type SettingsState = {
   sessionNameFormat: string
   durationReminder: string
-  autoEnd: boolean
-  autoInsights: boolean
-  trajectoryTracking: boolean
-  stressDetection: boolean
-  patternAnalysis: boolean
-  aiRecommendations: boolean
   audioFormat: string
   audioQuality: string
   microphone: string
-  sessionReminders: boolean
-  breakReminders: boolean
-  weeklyInsights: boolean
-  trendSummaries: boolean
   dataStorage: boolean
   anonymizedData: boolean
-  theme: string
-  graphAnimation: boolean
-  reducedMotion: boolean
 }
 
 const defaultSettings: SettingsState = {
   sessionNameFormat: 'topic-date',
   durationReminder: '45',
-  autoEnd: true,
-  autoInsights: true,
-  trajectoryTracking: true,
-  stressDetection: true,
-  patternAnalysis: true,
-  aiRecommendations: true,
   audioFormat: 'webm',
   audioQuality: 'high',
   microphone: 'default',
-  sessionReminders: true,
-  breakReminders: true,
-  weeklyInsights: false,
-  trendSummaries: true,
   dataStorage: true,
   anonymizedData: false,
-  theme: 'dark',
-  graphAnimation: true,
-  reducedMotion: false,
 }
 
 function Toggle({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
@@ -116,24 +90,11 @@ export default function SettingsPage() {
       const nextSettings: SettingsState = {
         sessionNameFormat: settingsPayload?.sessionNameFormat ?? defaultSettings.sessionNameFormat,
         durationReminder: String(settingsPayload?.durationReminder ?? defaultSettings.durationReminder),
-        autoEnd: settingsPayload?.autoEnd ?? defaultSettings.autoEnd,
-        autoInsights: settingsPayload?.autoInsights ?? defaultSettings.autoInsights,
-        trajectoryTracking: settingsPayload?.trajectoryTracking ?? defaultSettings.trajectoryTracking,
-        stressDetection: settingsPayload?.stressDetection ?? defaultSettings.stressDetection,
-        patternAnalysis: settingsPayload?.patternAnalysis ?? defaultSettings.patternAnalysis,
-        aiRecommendations: settingsPayload?.aiRecommendations ?? defaultSettings.aiRecommendations,
         audioFormat: settingsPayload?.audioFormat ?? defaultSettings.audioFormat,
         audioQuality: settingsPayload?.audioQuality ?? defaultSettings.audioQuality,
         microphone: settingsPayload?.microphone ?? defaultSettings.microphone,
-        sessionReminders: settingsPayload?.sessionReminders ?? defaultSettings.sessionReminders,
-        breakReminders: settingsPayload?.breakReminders ?? defaultSettings.breakReminders,
-        weeklyInsights: settingsPayload?.weeklyInsights ?? defaultSettings.weeklyInsights,
-        trendSummaries: settingsPayload?.trendSummaries ?? defaultSettings.trendSummaries,
         dataStorage: settingsPayload?.dataStorage ?? defaultSettings.dataStorage,
         anonymizedData: settingsPayload?.anonymizedData ?? defaultSettings.anonymizedData,
-        theme: settingsPayload?.theme ?? defaultSettings.theme,
-        graphAnimation: settingsPayload?.graphAnimation ?? defaultSettings.graphAnimation,
-        reducedMotion: settingsPayload?.reducedMotion ?? defaultSettings.reducedMotion,
       }
 
       setName(nextAccount.name)
@@ -153,6 +114,13 @@ export default function SettingsPage() {
         setIsLoading(false)
       })
   }, [])
+
+  const handleSettingsChange = (newValues: Partial<SettingsState>) => {
+    setSettings(current => {
+      const next = { ...current, ...newValues }
+      return next
+    })
+  }
 
   async function handleSave() {
     setIsSaving(true)
@@ -269,14 +237,14 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex">
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex transition-colors duration-300">
       <DashboardSidebar active="Settings" />
 
       <main className="flex-1 ml-52 overflow-auto flex justify-center">
         <div className="p-6 w-full max-w-6xl">
           <div className="mb-6">
             <h1 className="text-xl font-semibold mb-1">Settings</h1>
-            <p className="text-white/50 text-sm">Manage your account and preferences</p>
+            <p className="text-black/50 dark:text-white/50 text-sm">Manage your account and preferences</p>
           </div>
 
           {error && (
@@ -294,41 +262,41 @@ export default function SettingsPage() {
           <Section title="Account">
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-xl font-semibold">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-xl font-semibold text-white">
                   {(name || 'J').slice(0, 1).toUpperCase()}
                 </div>
                 <button
                   onClick={() => setMessage('Avatar upload is not available yet.')}
-                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition-colors"
+                  className="px-4 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                 >
                   Avatar Upload Unavailable
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-white/60 mb-2">Name</label>
+                  <label className="block text-sm text-black/60 dark:text-white/60 mb-2">Name</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-white/30"
+                    className="w-full px-3 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:border-blue-500/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-white/60 mb-2">Email</label>
+                  <label className="block text-sm text-black/60 dark:text-white/60 mb-2">Email</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-white/30"
+                    className="w-full px-3 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:border-blue-500/50"
                   />
                 </div>
               </div>
               <div className="flex gap-3 pt-2">
-                <button onClick={() => { handleSave().catch(() => undefined) }} disabled={isSaving || isLoading} className="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors disabled:opacity-50">
+                <button onClick={() => { handleSave().catch(() => undefined) }} disabled={isSaving || isLoading} className="min-w-[140px] flex items-center justify-center px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg text-sm font-medium hover:opacity-80 transition-colors disabled:opacity-50">
                   {isSaving ? 'Saving...' : 'Save Changes'}
                 </button>
-                <button onClick={handleReset} disabled={isSaving || isLoading} className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition-colors disabled:opacity-50">
+                <button onClick={handleReset} disabled={isSaving || isLoading} className="min-w-[100px] flex items-center justify-center px-4 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm hover:bg-black/10 dark:hover:bg-white/10 transition-colors disabled:opacity-50">
                   Reset
                 </button>
               </div>
@@ -339,69 +307,22 @@ export default function SettingsPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-white/60 mb-2">Default Session Name Format</label>
-                  <select value={settings.sessionNameFormat} onChange={(e) => setSettings((current) => ({ ...current, sessionNameFormat: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-white/30">
-                    <option value="topic-date" className="bg-black">Topic + Date</option>
-                    <option value="date-topic" className="bg-black">Date + Topic</option>
-                    <option value="topic" className="bg-black">Topic Only</option>
+                  <label className="block text-sm text-black/60 dark:text-white/60 mb-2">Default Session Name Format</label>
+                  <select value={settings.sessionNameFormat} onChange={(e) => handleSettingsChange({ sessionNameFormat: e.target.value })} className="w-full px-3 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:border-blue-500/50 bg-white dark:bg-black">
+                    <option value="topic-date">Topic + Date</option>
+                    <option value="date-topic">Date + Topic</option>
+                    <option value="topic">Topic Only</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-white/60 mb-2">Duration Reminder (minutes)</label>
-                  <select value={settings.durationReminder} onChange={(e) => setSettings((current) => ({ ...current, durationReminder: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-white/30">
-                    <option value="30" className="bg-black">30</option>
-                    <option value="45" className="bg-black">45</option>
-                    <option value="60" className="bg-black">60</option>
-                    <option value="90" className="bg-black">90</option>
+                  <label className="block text-sm text-black/60 dark:text-white/60 mb-2">Duration Reminder (minutes)</label>
+                  <select value={settings.durationReminder} onChange={(e) => handleSettingsChange({ durationReminder: e.target.value })} className="w-full px-3 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:border-blue-500/50 bg-white dark:bg-black">
+                    <option value="30">30</option>
+                    <option value="45">45</option>
+                    <option value="60">60</option>
+                    <option value="90">90</option>
                   </select>
                 </div>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-white/5">
-                <div>
-                  <p className="text-sm font-medium">Auto-detect Session End</p>
-                  <p className="text-xs text-white/40">Automatically end session when inactivity detected</p>
-                </div>
-                <Toggle enabled={settings.autoEnd} onChange={(value) => setSettings((current) => ({ ...current, autoEnd: value }))} />
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <div>
-                  <p className="text-sm font-medium">Auto-generate Insights</p>
-                  <p className="text-xs text-white/40">Generate insights after each session</p>
-                </div>
-                <Toggle enabled={settings.autoInsights} onChange={(value) => setSettings((current) => ({ ...current, autoInsights: value }))} />
-              </div>
-            </div>
-          </Section>
-
-          <Section title="Emotional Analysis">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between py-2 border-b border-white/5">
-                <div>
-                  <p className="text-sm font-medium">Emotional Trajectory Tracking</p>
-                  <p className="text-xs text-white/40">Track VAD values over time</p>
-                </div>
-                <Toggle enabled={settings.trajectoryTracking} onChange={(value) => setSettings((current) => ({ ...current, trajectoryTracking: value }))} />
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-white/5">
-                <div>
-                  <p className="text-sm font-medium">Stress Spike Detection</p>
-                  <p className="text-xs text-white/40">Alert when stress levels spike</p>
-                </div>
-                <Toggle enabled={settings.stressDetection} onChange={(value) => setSettings((current) => ({ ...current, stressDetection: value }))} />
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-white/5">
-                <div>
-                  <p className="text-sm font-medium">Productivity Pattern Analysis</p>
-                  <p className="text-xs text-white/40">Detect patterns in your work sessions</p>
-                </div>
-                <Toggle enabled={settings.patternAnalysis} onChange={(value) => setSettings((current) => ({ ...current, patternAnalysis: value }))} />
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <div>
-                  <p className="text-sm font-medium">AI Recommendations</p>
-                  <p className="text-xs text-white/40">Receive personalized suggestions</p>
-                </div>
-                <Toggle enabled={settings.aiRecommendations} onChange={(value) => setSettings((current) => ({ ...current, aiRecommendations: value }))} />
               </div>
             </div>
           </Section>
@@ -410,120 +331,60 @@ export default function SettingsPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-white/60 mb-2">Recording Format</label>
-                  <select value={settings.audioFormat} onChange={(e) => setSettings((current) => ({ ...current, audioFormat: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-white/30">
-                    <option value="webm" className="bg-black">WEBM</option>
-                    <option value="mp3" className="bg-black">MP3</option>
-                    <option value="wav" className="bg-black">WAV</option>
+                  <label className="block text-sm text-black/60 dark:text-white/60 mb-2">Recording Format</label>
+                  <select value={settings.audioFormat} onChange={(e) => handleSettingsChange({ audioFormat: e.target.value })} className="w-full px-3 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:border-blue-500/50 bg-white dark:bg-black">
+                    <option value="webm">WEBM</option>
+                    <option value="mp3">MP3</option>
+                    <option value="wav">WAV</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-white/60 mb-2">Audio Quality</label>
-                  <select value={settings.audioQuality} onChange={(e) => setSettings((current) => ({ ...current, audioQuality: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-white/30">
-                    <option value="high" className="bg-black">High</option>
-                    <option value="medium" className="bg-black">Medium</option>
-                    <option value="low" className="bg-black">Low</option>
+                  <label className="block text-sm text-black/60 dark:text-white/60 mb-2">Audio Quality</label>
+                  <select value={settings.audioQuality} onChange={(e) => handleSettingsChange({ audioQuality: e.target.value })} className="w-full px-3 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:border-blue-500/50 bg-white dark:bg-black">
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-sm text-white/60 mb-2">Microphone</label>
-                <select value={settings.microphone} onChange={(e) => setSettings((current) => ({ ...current, microphone: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-white/30">
-                  <option value="default" className="bg-black">Default Microphone</option>
-                  <option value="external" className="bg-black">External USB Microphone</option>
+                <label className="block text-sm text-black/60 dark:text-white/60 mb-2">Microphone</label>
+                <select value={settings.microphone} onChange={(e) => handleSettingsChange({ microphone: e.target.value })} className="w-full px-3 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:border-blue-500/50 bg-white dark:bg-black">
+                  <option value="default">Default Microphone</option>
+                  <option value="external">External USB Microphone</option>
                 </select>
               </div>
               <button
                 onClick={() => { testMicrophone().catch(() => undefined) }}
-                className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition-colors"
+                className="px-4 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
               >
                 Test Microphone
               </button>
-              {microphoneMessage && <p className="text-sm text-white/60">{microphoneMessage}</p>}
-            </div>
-          </Section>
-
-          <Section title="Notifications">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between py-2 border-b border-white/5">
-                <div>
-                  <p className="text-sm font-medium">Session Reminders</p>
-                  <p className="text-xs text-white/40">Remind to start focus sessions</p>
-                </div>
-                <Toggle enabled={settings.sessionReminders} onChange={(value) => setSettings((current) => ({ ...current, sessionReminders: value }))} />
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-white/5">
-                <div>
-                  <p className="text-sm font-medium">Break Reminders</p>
-                  <p className="text-xs text-white/40">Prompt for breaks during long sessions</p>
-                </div>
-                <Toggle enabled={settings.breakReminders} onChange={(value) => setSettings((current) => ({ ...current, breakReminders: value }))} />
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-white/5">
-                <div>
-                  <p className="text-sm font-medium">Weekly Insights</p>
-                  <p className="text-xs text-white/40">Receive weekly productivity summary</p>
-                </div>
-                <Toggle enabled={settings.weeklyInsights} onChange={(value) => setSettings((current) => ({ ...current, weeklyInsights: value }))} />
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <div>
-                  <p className="text-sm font-medium">Emotional Trend Summaries</p>
-                  <p className="text-xs text-white/40">Weekly emotional pattern updates</p>
-                </div>
-                <Toggle enabled={settings.trendSummaries} onChange={(value) => setSettings((current) => ({ ...current, trendSummaries: value }))} />
-              </div>
+              {microphoneMessage && <p className="text-sm text-black/60 dark:text-white/60">{microphoneMessage}</p>}
             </div>
           </Section>
 
           <Section title="Privacy">
             <div className="space-y-2">
-              <div className="flex items-center justify-between py-2 border-b border-white/5">
+              <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-white/5">
                 <div>
                   <p className="text-sm font-medium">Emotional Data Storage</p>
-                  <p className="text-xs text-white/40">Store emotional analysis data locally</p>
+                  <p className="text-xs text-black/40 dark:text-white/40">Store emotional analysis data locally</p>
                 </div>
-                <Toggle enabled={settings.dataStorage} onChange={(value) => setSettings((current) => ({ ...current, dataStorage: value }))} />
+                <Toggle enabled={settings.dataStorage} onChange={(value) => handleSettingsChange({ dataStorage: value })} />
               </div>
-              <div className="flex items-center justify-between py-2 border-b border-white/5">
+              <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-white/5">
                 <div>
                   <p className="text-sm font-medium">Anonymized Model Improvement</p>
-                  <p className="text-xs text-white/40">Contribute anonymized data to improve AI</p>
+                  <p className="text-xs text-black/40 dark:text-white/40">Contribute anonymized data to improve AI</p>
                 </div>
-                <Toggle enabled={settings.anonymizedData} onChange={(value) => setSettings((current) => ({ ...current, anonymizedData: value }))} />
+                <Toggle enabled={settings.anonymizedData} onChange={(value) => handleSettingsChange({ anonymizedData: value })} />
               </div>
               <div className="flex items-center justify-between py-2">
                 <p className="text-sm font-medium">Export Personal Data</p>
-                <button onClick={() => { downloadExport('/api/export/personal-data', 'moodflow-personal-data.json').catch((downloadError) => setError(downloadError instanceof Error ? downloadError.message : 'Export failed.')) }} className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs hover:bg-white/10 transition-colors">
+                <button onClick={() => { downloadExport('/api/export/personal-data', 'moodflow-personal-data.json').catch((downloadError) => setError(downloadError instanceof Error ? downloadError.message : 'Export failed.')) }} className="px-3 py-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-xs hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                   Download
                 </button>
-              </div>
-            </div>
-          </Section>
-
-          <Section title="Appearance">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-white/60 mb-2">Theme</label>
-                <select value={settings.theme} onChange={(e) => setSettings((current) => ({ ...current, theme: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-white/30">
-                  <option value="dark" className="bg-black">Dark</option>
-                  <option value="system" className="bg-black">System</option>
-                  <option value="light" className="bg-black">Light</option>
-                </select>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-white/5">
-                <div>
-                  <p className="text-sm font-medium">Graph Animations</p>
-                  <p className="text-xs text-white/40">Animate charts and graphs</p>
-                </div>
-                <Toggle enabled={settings.graphAnimation} onChange={(value) => setSettings((current) => ({ ...current, graphAnimation: value }))} />
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <div>
-                  <p className="text-sm font-medium">Reduced Motion</p>
-                  <p className="text-xs text-white/40">Minimize UI animations</p>
-                </div>
-                <Toggle enabled={settings.reducedMotion} onChange={(value) => setSettings((current) => ({ ...current, reducedMotion: value }))} />
               </div>
             </div>
           </Section>
@@ -532,20 +393,20 @@ export default function SettingsPage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between py-2">
                 <p className="text-sm font-medium">Export Session Data</p>
-                <button onClick={() => { downloadExport('/api/export/sessions', 'moodflow-sessions.json').catch((downloadError) => setError(downloadError instanceof Error ? downloadError.message : 'Export failed.')) }} className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs hover:bg-white/10 transition-colors">
+                <button onClick={() => { downloadExport('/api/export/sessions', 'moodflow-sessions.json').catch((downloadError) => setError(downloadError instanceof Error ? downloadError.message : 'Export failed.')) }} className="px-3 py-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-xs hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                   Download
                 </button>
               </div>
               <div className="flex items-center justify-between py-2">
                 <p className="text-sm font-medium">Export Emotional Insights</p>
-                <button onClick={() => { downloadExport('/api/export/insights', 'moodflow-insights.json').catch((downloadError) => setError(downloadError instanceof Error ? downloadError.message : 'Export failed.')) }} className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs hover:bg-white/10 transition-colors">
+                <button onClick={() => { downloadExport('/api/export/insights', 'moodflow-insights.json').catch((downloadError) => setError(downloadError instanceof Error ? downloadError.message : 'Export failed.')) }} className="px-3 py-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-xs hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                   Download
                 </button>
               </div>
-              <div className="flex items-center justify-between py-2 border-t border-white/10 mt-4 pt-4">
+              <div className="flex items-center justify-between py-2 border-t border-black/10 dark:border-white/10 mt-4 pt-4">
                 <div>
                   <p className="text-sm font-medium">Clear Session History</p>
-                  <p className="text-xs text-white/40">Delete all past sessions</p>
+                  <p className="text-xs text-black/40 dark:text-white/40">Delete all past sessions</p>
                 </div>
                 <button onClick={() => setShowConfirm('sessions')} className="px-3 py-1.5 bg-red-500/20 border border-red-500/30 text-red-400 rounded-lg text-xs hover:bg-red-500/30 transition-colors">
                   Clear
@@ -554,7 +415,7 @@ export default function SettingsPage() {
               <div className="flex items-center justify-between py-2">
                 <div>
                   <p className="text-sm font-medium">Delete All Recordings</p>
-                  <p className="text-xs text-white/40">Permanently remove all audio recordings</p>
+                  <p className="text-xs text-black/40 dark:text-white/40">Permanently remove all audio recordings</p>
                 </div>
                 <button onClick={() => setShowConfirm('recordings')} className="px-3 py-1.5 bg-red-500/20 border border-red-500/30 text-red-400 rounded-lg text-xs hover:bg-red-500/30 transition-colors">
                   Delete
@@ -566,36 +427,36 @@ export default function SettingsPage() {
           <Section title="About">
             <div className="space-y-3 text-sm">
               <div className="flex justify-between py-1">
-                <span className="text-white/60">Application Version</span>
+                <span className="text-black/60 dark:text-white/60">Application Version</span>
                 <span>1.0.0</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-white/60">Analysis Model</span>
+                <span className="text-black/60 dark:text-white/60">Analysis Model</span>
                 <span>EmotionVAD v2.1</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-white/60">Build</span>
+                <span className="text-black/60 dark:text-white/60">Build</span>
                 <span>2026.03.17</span>
               </div>
-              <div className="flex gap-4 pt-3 border-t border-white/10 mt-3">
-                <a href="#" className="text-white/60 hover:text-white transition-colors">Documentation</a>
-                <a href="#" className="text-white/60 hover:text-white transition-colors">Support</a>
-                <a href="#" className="text-white/60 hover:text-white transition-colors">Privacy Policy</a>
+              <div className="flex gap-4 pt-3 border-t border-black/10 dark:border-white/10 mt-3">
+                <a href="#" className="text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors">Documentation</a>
+                <a href="#" className="text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors">Support</a>
+                <a href="#" className="text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors">Privacy Policy</a>
               </div>
             </div>
           </Section>
 
           {showConfirm && (
             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-              <div className="bg-white/10 border border-white/20 rounded-xl p-6 max-w-sm w-full mx-4">
+              <div className="bg-white dark:bg-[#0d0d0d] border border-black/10 dark:border-white/20 rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl">
                 <h3 className="text-lg font-medium mb-2">Confirm Action</h3>
-                <p className="text-sm text-white/60 mb-4">
+                <p className="text-sm text-black/60 dark:text-white/60 mb-4">
                   Are you sure you want to {showConfirm === 'sessions' ? 'clear your session history' : 'delete all recordings'}? This action cannot be undone.
                 </p>
                 <div className="flex gap-3 justify-end">
                   <button
                     onClick={() => setShowConfirm(null)}
-                    className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition-colors"
+                    className="px-4 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                   >
                     Cancel
                   </button>

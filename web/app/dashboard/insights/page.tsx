@@ -44,7 +44,6 @@ function buildLinePath(values: number[], width: number, height: number) {
 }
 
 export default function InsightsPage() {
-  const [selectedTab, setSelectedTab] = useState('Analysis')
   const [data, setData] = useState<InsightsPayload>(emptyData)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
@@ -100,20 +99,6 @@ export default function InsightsPage() {
               {error}
             </div>
           )}
-
-          <div className="flex gap-2 mb-6">
-            {['Analysis', 'Sessions', 'Trends', 'Audio'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setSelectedTab(tab)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  selectedTab === tab ? 'bg-white text-black' : 'bg-white/5 text-white/50 hover:text-white'
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
 
           <div className="grid grid-cols-12 gap-4 mb-4">
             <div className="col-span-9 bg-white/5 border border-white/10 rounded-xl p-5">
@@ -186,7 +171,7 @@ export default function InsightsPage() {
           </div>
 
           <div className="grid grid-cols-12 gap-4 mb-4">
-            <div className="col-span-3 bg-white/5 border border-white/10 rounded-xl p-5">
+            <div className="col-span-4 bg-white/5 border border-white/10 rounded-xl p-5">
               <h2 className="text-base font-medium mb-4">Emotion Timeline Breakdown</h2>
               <div className="space-y-2">
                 {data.emotionTimeline.length > 0 ? data.emotionTimeline.map((item, i) => (
@@ -210,7 +195,7 @@ export default function InsightsPage() {
               </div>
             </div>
 
-            <div className="col-span-3 bg-white/5 border border-white/10 rounded-xl p-5">
+            <div className="col-span-4 bg-white/5 border border-white/10 rounded-xl p-5">
               <h2 className="text-base font-medium mb-4">Session Phases</h2>
               <div className="space-y-3">
                 {data.sessionPhases.length > 0 ? data.sessionPhases.map((phase, i) => (
@@ -234,7 +219,7 @@ export default function InsightsPage() {
               </div>
             </div>
 
-            <div className="col-span-3 bg-white/5 border border-white/10 rounded-xl p-5">
+            <div className="col-span-4 bg-white/5 border border-white/10 rounded-xl p-5">
               <h2 className="text-base font-medium mb-4">Emotion Distribution</h2>
               <div className="space-y-3">
                 {data.emotionDistribution.length > 0 ? data.emotionDistribution.map((item) => (
@@ -255,18 +240,6 @@ export default function InsightsPage() {
                     </div>
                   </div>
                 )) : <p className="text-sm text-white/35">No distribution yet.</p>}
-              </div>
-            </div>
-
-            <div className="col-span-3 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-white/10 rounded-xl p-5">
-              <h2 className="text-base font-medium mb-3">Recommendations</h2>
-              <div className="space-y-2">
-                {data.aiRecommendations.length > 0 ? data.aiRecommendations.map((recommendation) => (
-                  <div key={recommendation} className="flex items-start gap-2 text-sm text-white/70">
-                    <span className="text-green-400">•</span>
-                    <p>{recommendation}</p>
-                  </div>
-                )) : <p className="text-sm text-white/40">Recommendations appear after your first analyzed session.</p>}
               </div>
             </div>
           </div>

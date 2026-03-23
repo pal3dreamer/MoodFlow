@@ -93,7 +93,7 @@ export async function analyzeCheckinRecording(recordingId: string) {
       title: buildRecordingTitle(recording.filename, result.topic),
       status: RecordingStatus.ANALYZED,
       durationSeconds: result.duration_seconds ?? 0,
-      transcript: result.transcription ?? null,
+      transcript: result.transcript ?? result.transcription ?? null,
       topic: result.topic ?? null,
       dominantEmotion: titleEmotion(dominantEmotion),
       analysisVersion: "ai-service-v1",
