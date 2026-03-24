@@ -12,7 +12,7 @@ AI-powered mood tracking and focus session management with real-time emotional a
 
 MoodFlow is a modern web application that helps users track their emotional well-being during work sessions. Through voice check-ins and AI-powered analysis, it provides deep insights into mood patterns, focus stability, and stress levels.
 
-## FeaturesP
+## Features
 
 - **Voice Check-ins**: Record voice notes at the start and end of focus sessions
 - **AI-Powered Analysis**: Emotion detection using VAD (Valence-Arousal-Dominance) model
@@ -61,7 +61,7 @@ npm run prisma:migrate
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000)
 
 ## Environment Variables
 
