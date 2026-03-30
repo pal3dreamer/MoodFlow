@@ -89,3 +89,14 @@ websockets==16.0
 xxhash==3.6.0
 yarl==1.23.0
 openai-whisper==20231117
+
+# Job Queue
+redis==5.0.1
+bullmq==5.1.0
+python-rapidjson==1.19
+
+# HTTP Client
+httpx==0.28.1
+
+# MinIO
+minio==7.2.0

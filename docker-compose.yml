@@ -26,6 +26,16 @@ services:
       - minio_data:/data
     command: server /data --console-address ":9001"
 
+  redis:
+    image: redis:7-alpine
+    container_name: moodflow-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+
 volumes:
   postgres_data:
   minio_data:
+  redis_data:

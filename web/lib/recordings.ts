@@ -1,8 +1,8 @@
 import { RecordingKind, RecordingStatus } from "@prisma/client";
 import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
-import { uploadAudioObject, downloadAudioObject } from "@/lib/minio";
-import { processCheckin, analyzeAudio } from "@/lib/ai-service";
+import { uploadAudioObject } from "@/lib/minio";
+import { env } from "@/lib/env";
 import {
   buildRecommendationSet,
   calculateDistribution,
@@ -77,9 +77,18 @@ export async function analyzeCheckinRecording(recordingId: string) {
     throw new Error("Recording not found.");
   }
 
-  const bytes = await downloadAudioObject(recording.objectKey);
-  const file = new File([bytes], recording.filename, { type: recording.mimeType });
-  const result = await processCheckin(file);
+  const response = await fetch(`${env.aiServiceBaseUrl}/process-checkin/`, {
+    method: "POST",
+    body: recording.mimeType.startsWith("audio/")
+      ? await audioFileToFormData(recording)
+      : undefined,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Check-in processing failed: ${response.statusText}`);
+  }
+
+  const result = await response.json();
   const trajectory = result.emotion_trajectory ?? [];
   const dominantEmotion = dominantEmotionFromTrajectory(trajectory);
   const distribution = calculateDistribution(trajectory);
@@ -112,16 +121,49 @@ export async function analyzeCheckinRecording(recordingId: string) {
 }
 
 export async function queueLongRecordingAnalysis(recordingId: string) {
+  const recording = await db.recording.findUnique({ where: { id: recordingId } });
+  if (!recording) {
+    throw new Error("Recording not found.");
+  }
+
   await db.recording.update({
     where: { id: recordingId },
     data: { status: RecordingStatus.QUEUED },
   });
 
-  setImmediate(() => {
-    processLongRecording(recordingId).catch((error) => {
-      console.error("Background recording processing failed", error);
+  try {
+    const response = await fetch(`${env.aiServiceBaseUrl}/queue/analyze`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        recording_id: recordingId,
+        object_key: recording.objectKey,
+        bucket: recording.bucket,
+        filename: recording.filename,
+        mime_type: recording.mimeType,
+        user_id: recording.userId,
+        focus_session_id: recording.focusSessionId,
+      }),
     });
-  });
+
+    if (!response.ok) {
+      throw new Error(`Failed to enqueue job: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    console.log(`Enqueued analysis job: ${result.job_id}`);
+
+    return result;
+  } catch (error) {
+    console.error("Failed to enqueue analysis job:", error);
+
+    await db.recording.update({
+      where: { id: recordingId },
+      data: { status: RecordingStatus.FAILED, processingError: String(error) },
+    });
+
+    throw error;
+  }
 }
 
 export async function processLongRecording(recordingId: string) {
@@ -136,9 +178,18 @@ export async function processLongRecording(recordingId: string) {
   });
 
   try {
-    const bytes = await downloadAudioObject(recording.objectKey);
-    const file = new File([bytes], recording.filename, { type: recording.mimeType });
-    const result = await analyzeAudio(file);
+    const response = await fetch(`${env.aiServiceBaseUrl}/analyze-audio/`, {
+      method: "POST",
+      body: recording.mimeType.startsWith("audio/")
+        ? await audioFileToFormData(recording)
+        : undefined,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Analysis failed: ${response.statusText}`);
+    }
+
+    const result = await response.json();
     const trajectory = result.emotion_trajectory ?? [];
     const dominantEmotion = dominantEmotionFromTrajectory(trajectory);
     const distribution = calculateDistribution(trajectory);
@@ -225,4 +276,10 @@ export async function syncSessionFromRecording(recordingId: string) {
       summaryInsight: (latest?.aiInsights as string[] | null)?.[0] ?? focusSession.summaryInsight,
     },
   });
+}
+
+async function audioFileToFormData(recording: { objectKey: string; bucket: string; filename: string; mimeType: string }) {
+  const formData = new FormData();
+  formData.append("file", new Blob(), recording.filename);
+  return formData;
 }
