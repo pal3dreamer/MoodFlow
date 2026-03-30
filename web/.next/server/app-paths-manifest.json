@@ -1,13 +1,6 @@
 {
-  "/dashboard/page": "app/dashboard/page.js",
-  "/api/me/route": "app/api/me/route.js",
-  "/dashboard/sessions/page": "app/dashboard/sessions/page.js",
-  "/api/sessions/route": "app/api/sessions/route.js",
-  "/dashboard/insights/page": "app/dashboard/insights/page.js",
-  "/api/insights/route": "app/api/insights/route.js",
-  "/dashboard/recordings/page": "app/dashboard/recordings/page.js",
-  "/api/recordings/route": "app/api/recordings/route.js",
-  "/dashboard/settings/page": "app/dashboard/settings/page.js",
-  "/api/settings/route": "app/api/settings/route.js",
-  "/api/dashboard/route": "app/api/dashboard/route.js"
+  "/page": "app/page.js",
+  "/api/auth/register/route": "app/api/auth/register/route.js",
+  "/login/page": "app/login/page.js",
+  "/api/auth/login/route": "app/api/auth/login/route.js"
 }

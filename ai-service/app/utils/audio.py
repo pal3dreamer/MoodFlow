@@ -61,7 +61,7 @@ def preprocess_audio(audio_input: Union[bytes, str]) -> tuple[torch.Tensor, int]
     waveform, sample_rate = load_audio_from_bytes(audio_bytes)
     waveform = resample_audio(waveform, sample_rate, target_sr=16000)
     
-    if waveform.shape[0] == 1:
-        waveform = mono_to_stereo(waveform)
+    if waveform.shape[0] > 1:
+        waveform = waveform.mean(dim=0, keepdim=True)
     
     return waveform, 16000

@@ -1,35 +1,70 @@
 import logging
+import os
 import torch
 from typing import Optional
-from transformers import pipeline, WhisperProcessor, WhisperForConditionalGeneration
+from transformers import pipeline
+
+from app.cache.manager import get_cache_manager
 
 logger = logging.getLogger(__name__)
 
 
 class TranscriptionPipeline:
-    """Whisper-based speech-to-text transcription pipeline."""
+    """Whisper-based speech-to-text transcription pipeline with caching."""
     
     def __init__(self, model_name: str = "openai/whisper-base"):
         self.model_name = model_name
         self._pipeline = None
         self._loaded = False
+        self._device = "cpu"
     
     def _load(self):
-        """Lazy load the model on first use."""
-        if self._pipeline is None:
-            logger.info(f"Loading Whisper transcription model: {self.model_name}")
-            logger.info("  (This will download from HuggingFace on first run)")
+        """Lazy load the model with caching."""
+        if self._pipeline is not None:
+            return
+            
+        logger.info(f"Loading Whisper transcription model: {self.model_name}")
+        
+        cache = get_cache_manager()
+        use_cache = os.getenv("USE_MODEL_CACHE", "true").lower() == "true"
+        model_path = None
+        
+        if use_cache:
+            if cache.is_cached(self.model_name):
+                model_path = cache.load_model(self.model_name)
+                logger.info(f"  Loading from cache: {model_path}")
+            else:
+                logger.info("  Model not in cache, downloading from HuggingFace...")
+                model_path, _ = cache.cache_model(self.model_name)
+        
+        if torch.cuda.is_available():
+            self._device = "cuda"
+            torch_dtype = torch.float16
+        elif torch.backends.mps.is_available():
+            self._device = "mps"
+            torch_dtype = torch.float32
+        else:
+            self._device = "cpu"
+            torch_dtype = torch.float32
+        
+        if model_path:
+            self._pipeline = pipeline(
+                "automatic-speech-recognition",
+                model=model_path,
+                local_files_only=True,
+                dtype=torch_dtype,
+                device=self._device,
+            )
+        else:
             self._pipeline = pipeline(
                 "automatic-speech-recognition",
                 model=self.model_name,
-                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                device="cuda" if torch.cuda.is_available() else "cpu",
+                dtype=torch_dtype,
+                device=self._device,
             )
-            if torch.cuda.is_available():
-                logger.info("  Model loaded on GPU")
-            else:
-                logger.info("  Model loaded on CPU")
-            self._loaded = True
+        
+        logger.info(f"  Model loaded on {self._device.upper()}")
+        self._loaded = True
     
     def transcribe(self, audio_tensor: torch.Tensor, language: Optional[str] = None) -> str:
         """Transcribe audio to text."""
@@ -38,10 +73,8 @@ class TranscriptionPipeline:
         
         logger.info("  Running Whisper transcription...")
         
-        # Convert tensor to numpy for transformers pipeline
         audio_np = audio_tensor.squeeze().cpu().numpy()
         
-        # Handle stereo by taking first channel
         if audio_np.ndim > 1:
             audio_np = audio_np[0]
         
@@ -53,12 +86,18 @@ class TranscriptionPipeline:
         text = result.get("text", "")
         if not text and "chunks" in result:
             text = " ".join(chunk.get("text", "") for chunk in result["chunks"])
-        logger.info(f"  Transcription complete: \"{text}\"")
+        
+        text = text.strip()
+        logger.info(f"  Transcription complete: \"{text[:50]}...\"" if len(text) > 50 else f"  Transcription complete: \"{text}\"")
         
         return text
+    
+    @property
+    def device(self) -> str:
+        """Get current device."""
+        return self._device
 
 
-# Global singleton instance
 _transcription_pipeline: Optional[TranscriptionPipeline] = None
 
 
