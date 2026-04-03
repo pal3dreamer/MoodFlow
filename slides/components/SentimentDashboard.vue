@@ -322,7 +322,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .chart-title {
-  font-family: serif;
+  font-family: inherit;
   font-size: 0.9rem;
   font-weight: 700;
   color: #444;
@@ -330,7 +330,7 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 .chart-subtitle {
-  font-family: serif;
+  font-family: inherit;
   font-size: 0.6rem;
   color: #888;
   text-align: center;
