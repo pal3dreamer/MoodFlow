@@ -78,7 +78,7 @@ onMounted(() => {
   const initialHeight = container.clientHeight || 400
 
   camera = new THREE.PerspectiveCamera(50, initialWidth / initialHeight, 0.1, 100)
-  camera.position.set(2.0, 0.8, 2.8)
+  camera.position.set(1.4, 0.6, 2.0)
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
   renderer.setSize(initialWidth, initialHeight)
