@@ -44,7 +44,6 @@ An <span class="font-semibold text-[#005F73]">Emotional Mirror</span> for high-p
 </p>
 </div>
 <div v-click class="max-w-xl text-center">
-<p class="text-[0.55rem] font-bold uppercase tracking-[0.4em] text-[#005F73]/60 mb-2">Solving Burnout Blindness</p>
 <p class="text-sm font-light text-black/50 italic px-12 leading-relaxed">
 Transforming productivity from <span class="opacity-30 line-through">"time-spent"</span> 
 into <span class="text-black font-normal not-italic">"quality-of-mind"</span>.
@@ -91,8 +90,7 @@ layout: none
 <div class="grid grid-cols-2 h-full bg-[#F5F5F7]">
 <div class="flex flex-col justify-start py-10 px-12 space-y-6">
 <div class="space-y-2">
-<p class="text-[0.55rem] font-bold uppercase tracking-[0.5em] text-[#005F73]">The Silent Epidemic</p>
-<h2 class="text-2xl font-bold font-serif leading-snug text-[#1D1D1F]">We track every metric except the one that matters most: <span class="text-[#005F73]">Mental State.</span></h2>
+<h2 class="text-2xl font-bold font-serif leading-snug text-[#1D1D1F]">We track every metric except the one that matters most: <span class="text-black">Mental State.</span></h2>
 </div>
 <div class="space-y-5">
 <div class="space-y-1.5">
@@ -137,7 +135,6 @@ layout: none
 
 <div class="h-full flex flex-col justify-between bg-[#F5F5F7] px-12 py-10 text-[#1D1D1F]">
 <div class="space-y-1 mb-4">
-<p class="text-[0.55rem] font-bold uppercase tracking-[0.4em] text-[#005F73]">Deep Tech – VAD Regression & Acoustic Heuristics</p>
 <h2 class="text-3xl font-serif font-bold text-[#1D1D1F]">Listening to Stress, Not Just Words</h2>
 <p class="text-[0.7rem] font-light text-black/60">We didn't just wrap an LLM. We built a custom, continuous acoustic processing pipeline.</p>
 </div>
@@ -260,7 +257,6 @@ layout: default
 <div class="h-full w-full flex flex-col justify-start px-12 py-10 relative bg-[#F5F5F7]">
 <div class="flex flex-col justify-start gap-2 mb-6 w-full shrink-0">
 <h1 class="!text-[1.8rem] !font-medium !tracking-[0.15em] !text-[#1D1D1F] !m-0 !leading-tight uppercase" style="font-family: 'Playfair Display', serif;">Real-World Impact & The Market Opportunity</h1>
-<div class="text-[0.65rem] font-bold uppercase tracking-[0.4em] text-[#005F73] ml-1">The ROI of Cognitive Fitness</div>
 </div>
 <div class="grid grid-cols-3 gap-5 w-full flex-grow items-stretch min-h-0">
 <div class="flex flex-col bg-white p-5 rounded-xl border border-black/[0.05] shadow-sm relative overflow-hidden font-sans">
