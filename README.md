@@ -1,6 +1,6 @@
 # MoodFlow
 
-<<<<<<< HEAD
+
 A web app that tracks your mood during focus sessions. Record a short voice check-in at the start and end of each session. The app analyzes your emotional state using AI and shows you patterns over time.
 
 ## Features
@@ -40,8 +40,7 @@ moodflow/
 | **Database** | PostgreSQL + Prisma ORM |
 | **File Storage** | MinIO (S3-compatible) |
 | **AI Service** | FastAPI, PyTorch, Transformers, Whisper, Wav2Vec2 |
-=======
-AI-powered mood tracking and focus session management with real-time emotional analysis.
+
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
@@ -72,7 +71,6 @@ MoodFlow is a modern web application that helps users track their emotional well
 | Database | PostgreSQL with Prisma ORM |
 | Storage | MinIO (S3-compatible) |
 | AI Service | FastAPI, PyTorch, Transformers, Whisper |
->>>>>>> 7fe3eba7b873f1d3c5064aece88ccc06fe2708ea
 
 ## Quick Start
 
@@ -82,13 +80,11 @@ MoodFlow is a modern web application that helps users track their emotional well
 docker-compose up -d
 ```
 
-<<<<<<< HEAD
 - **PostgreSQL**: `localhost:5432`
 - **MinIO API**: `localhost:9000`
 - **MinIO Console**: `localhost:9001`
 
 ### 2. Web App Setup
-=======
 This starts PostgreSQL (port 5432) and MinIO (ports 9000, 9001).
 
 ### 2. Start AI Service
@@ -100,7 +96,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 ### 3. Start Web Application
->>>>>>> 7fe3eba7b873f1d3c5064aece88ccc06fe2708ea
+
 
 ```bash
 cd web
@@ -113,7 +109,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
-<<<<<<< HEAD
+
 ### 3. AI Service Setup
 
 ```bash
@@ -269,7 +265,6 @@ cd ai-service && docker build -t moodflow-ai .
 ## License
 
 MIT
-=======
 ## Environment Variables
 
 ### Web Application (`web/.env.local`)
